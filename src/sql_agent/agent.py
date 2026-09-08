@@ -17,12 +17,14 @@ answer briefly, and include relevant values from the query result.
 
 def _model_options(model: str) -> dict[str, object]:
     options: dict[str, object] = {}
+    # Keep the model deterministic by default unless it's explicitly a lightweight variant.
     if "fixed" not in model.lower() and "lite" not in model.lower():
         options["temperature"] = 0
     return options
 
 
 def build_agent(settings: Settings | None = None):
+    # Allow dependency injection in tests while defaulting to environment-driven config.
     settings = settings or Settings.from_env()
     if not settings.google_api_key:
         raise RuntimeError(
@@ -34,6 +36,7 @@ def build_agent(settings: Settings | None = None):
         google_api_key=settings.google_api_key,
         **_model_options(settings.gemini_model),
     )
+    # Use a SQLDatabase wrapper so the agent can inspect schema and execute read-only queries.
     database = create_database(settings.database_url)
     prompt = ChatPromptTemplate.from_messages(
         [

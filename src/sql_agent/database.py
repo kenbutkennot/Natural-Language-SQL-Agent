@@ -4,6 +4,7 @@ from langchain_community.utilities import SQLDatabase
 from sqlalchemy import create_engine, text
 
 
+# Minimal sample schema used to validate SQL interactions in the demo app.
 SAMPLE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS orders (
 )
 """
 
+# Seed rows chosen to exercise common SQL questions like totals, customers, and product trends.
 SAMPLE_ROWS = [
     (1, "Ada Lovelace", "Notebook", 2, 2400, "2026-01-05"),
     (2, "Grace Hopper", "Keyboard", 1, 8900, "2026-01-09"),
@@ -25,6 +27,7 @@ SAMPLE_ROWS = [
 
 def create_database(database_url: str) -> SQLDatabase:
     """Create a LangChain SQLDatabase, creating local SQLite parent folders."""
+    # Ensure a file-based SQLite path has a directory available before creating the database.
     if database_url.startswith("sqlite:///") and ":memory:" not in database_url:
         database_path = Path(database_url.removeprefix("sqlite:///"))
         database_path.parent.mkdir(parents=True, exist_ok=True)
@@ -37,6 +40,7 @@ def seed_demo_database(database_url: str) -> None:
     if not database_url.startswith("sqlite:///"):
         raise ValueError("The demo seed command only supports SQLite databases.")
 
+    # SQLite file databases need a parent directory before the engine can open them.
     if ":memory:" not in database_url:
         database_path = Path(database_url.removeprefix("sqlite:///"))
         database_path.parent.mkdir(parents=True, exist_ok=True)

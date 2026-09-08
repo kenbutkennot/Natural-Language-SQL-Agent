@@ -17,6 +17,7 @@ def _response_text(result: dict) -> str:
     if isinstance(output, str):
         return output
     if isinstance(output, list):
+        # LangChain may return a list of message-like entries instead of a single string.
         return "\n".join(
             item.get("text", "") if isinstance(item, dict) else str(item)
             for item in output
@@ -37,6 +38,7 @@ def _chat(agent) -> None:
 
         if not question:
             continue
+        # Support a few simple terminal controls so the prompt stays usable in a shell.
         if question.lower() in {"exit", "quit", ":q"}:
             print("Goodbye.")
             return

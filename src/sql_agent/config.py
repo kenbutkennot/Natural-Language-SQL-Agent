@@ -3,6 +3,7 @@ import os
 
 from dotenv import load_dotenv
 
+# Load application-level environment values from a local .env file when present.
 load_dotenv()
 
 
@@ -14,6 +15,7 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
+        # Keep config centralized so CLI and Streamlit share the same defaults and overrides.
         return cls(
             database_url=os.getenv("DATABASE_URL", cls.database_url),
             google_api_key=os.getenv("GOOGLE_API_KEY"),
